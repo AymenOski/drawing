@@ -63,7 +63,6 @@ impl Drawable for Point {
     }
 
     fn color(&self) -> Color {
-        // Each shape must be drawn in a different color ; so I have chosen blue for Point
         Color::hex("#2600ffff").unwrap()
     }
 }
@@ -102,7 +101,37 @@ impl Drawable for Line {
     }
 
     fn color(&self) -> Color {
-        Color::hex("#FF0000").unwrap()
+        Color::hex("#15ff00ff").unwrap()
     }
 }
 
+impl Triangle {
+    pub fn new(p1: &Point, p2: &Point, p3: &Point) -> Self {
+        Triangle {
+            p1: *p1,
+            p2: *p2,
+            p3: *p3,
+        }
+    }
+    pub fn random(max_width: i32, max_height: i32) -> Self {
+        Self {
+            p1: Point::random(max_width, max_height),
+            p2: Point::random(max_width, max_height),
+            p3: Point::random(max_width, max_height),
+        }
+    }
+    
+}
+
+impl Drawable for Triangle {
+    fn draw(&self, image: &mut impl Displayable) {
+
+        Line::new(&self.p1, &self.p2).draw(image);
+        Line::new(&self.p2, &self.p3).draw(image);
+        Line::new(&self.p3, &self.p1).draw(image);
+    }
+
+    fn color(&self) -> Color {
+        Color::hex("#ffffffff").unwrap()
+    }
+}
