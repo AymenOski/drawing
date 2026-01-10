@@ -100,7 +100,24 @@ impl Drawable for Line {
             image.display(x, y, color.clone());
         }
     }
+    fn draw_with_color(&self, img: &mut impl Displayable, color: &Color) {
+        let x1 = self.p1.x;
+        let y1 = self.p1.y;
+        let x2 = self.p2.x;
+        let y2 = self.p2.y;
 
+        let dx = (x2 - x1).abs();
+        let dy = (y2 - y1).abs();
+
+        let steps = dx.max(dy);
+
+        for i in 0..=steps {
+            let t = (i as f32) / (steps as f32);
+            let x = x1 + ((((x2 - x1) as f32) * t).round() as i32);
+            let y = y1 + ((((y2 - y1) as f32) * t).round() as i32);
+            img.display(x, y, color.clone());
+        }
+    }
 }
 impl Triangle {
     pub fn new(p1: &Point, p2: &Point, p3: &Point) -> Self {
