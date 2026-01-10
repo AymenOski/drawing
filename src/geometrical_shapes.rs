@@ -156,10 +156,12 @@ impl Drawable for Rectangle {
     fn draw(&self, image: &mut impl Displayable) {
         let p3 = Point::new(self.p1.x, self.p2.y);
         let p4 = Point::new(self.p2.x, self.p1.y);
-        Line::new(&self.p1, &p3).draw(image);
-        Line::new(&p3, &self.p2).draw(image);
-        Line::new(&self.p2, &p4).draw(image);
-        Line::new(&p4, &self.p1).draw(image);
+        let color = self.color();
+
+        Line::new(&self.p1, &p3).draw_with_color(image, &color);
+        Line::new(&p3, &self.p2).draw_with_color(image, &color);
+        Line::new(&self.p2, &p4).draw_with_color(image, &color);
+        Line::new(&p4, &self.p1).draw_with_color(image, &color);
     }
 }
 impl Circle {
