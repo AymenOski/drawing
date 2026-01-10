@@ -30,14 +30,14 @@ for _ in 0..15 {
     let shape_type = rng.random_range(1..=2);
 
     match shape_type {
-        // 0 => {
-        //     let p = gs::Point::random(image.width, image.height);
-        //     p.draw(&mut image);
-        // }
-        // 1 => {
-        //     let l = gs::Line::random(image.width, image.height);
-        //     l.draw(&mut image);
-        // }
+        0 => {
+            let p = gs::Point::random(image.width, image.height);
+            p.draw(&mut image);
+        }
+        1 => {
+            let l = gs::Line::random(image.width, image.height);
+            l.draw(&mut image);
+        }
         2 => {
             let c = gs::Triangle::random(image.width, image.height);
             c.draw(&mut image);
@@ -46,9 +46,9 @@ for _ in 0..15 {
     }
 }
 
-    // for _ in 1..50 {
-    //     gs::Circle::random(image.width, image.height).draw(&mut image);
-    // }
+    for _ in 1..50 {
+        gs::Circle::random(image.width, image.height).draw(&mut image);
+    }
 
     raster::save(&image, "image.png").unwrap();
 }

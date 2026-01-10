@@ -1,18 +1,23 @@
 use rand::Rng;
 use raster::Color;
 
-// Traits
 pub trait Drawable {
-    fn draw(&self, image: &mut impl Displayable);
-    fn color(&self) -> Color;
+    fn draw(&self, img: &mut impl Displayable);
+
+    fn color(&self) -> Color {
+        let mut rng = rand::rng();
+        Color::rgb(rng.random::<u8>(), rng.random::<u8>(), rng.random::<u8>())
+    }
+
+    fn draw_with_color(&self, img: &mut impl Displayable, _color: &Color) {
+        self.draw(img);
+    }
 }
 
 pub trait Displayable {
     fn display(&mut self, x: i32, y: i32, color: Color);
 }
 
-
-// Structures
 #[derive(Clone, Copy)]
 pub struct Point {
     x: i32,
@@ -60,10 +65,6 @@ impl Drawable for Point {
     fn draw(&self, image: &mut impl Displayable) {
         image.display(self.x, self.y, self.color());
     }
-
-    fn color(&self) -> Color {
-        Color::hex("#2600ffff").unwrap()
-    }
 }
 
 impl Line {
@@ -88,19 +89,34 @@ impl Drawable for Line {
 
         let dx = (x2 - x1).abs();
         let dy = (y2 - y1).abs();
+        let color = self.color();
 
         let steps = dx.max(dy);
 
         for i in 0..=steps {
-            let t = i as f32 / steps as f32;
-            let x = x1 + ((x2 - x1) as f32 * t).round() as i32;
-            let y = y1 + ((y2 - y1) as f32 * t).round() as i32;
-            image.display(x, y, self.color());
+            let t = (i as f32) / (steps as f32);
+            let x = x1 + ((((x2 - x1) as f32) * t).round() as i32);
+            let y = y1 + ((((y2 - y1) as f32) * t).round() as i32);
+            image.display(x, y, color.clone());
         }
     }
+    fn draw_with_color(&self, img: &mut impl Displayable, color: &Color) {
+        let x1 = self.p1.x;
+        let y1 = self.p1.y;
+        let x2 = self.p2.x;
+        let y2 = self.p2.y;
 
-    fn color(&self) -> Color {
-        Color::hex("#15ff00ff").unwrap()
+        let dx = (x2 - x1).abs();
+        let dy = (y2 - y1).abs();
+
+        let steps = dx.max(dy);
+
+        for i in 0..=steps {
+            let t = (i as f32) / (steps as f32);
+            let x = x1 + ((((x2 - x1) as f32) * t).round() as i32);
+            let y = y1 + ((((y2 - y1) as f32) * t).round() as i32);
+            img.display(x, y, color.clone());
+        }
     }
 }
 
@@ -119,19 +135,14 @@ impl Triangle {
             p3: Point::random(max_width, max_height),
         }
     }
-    
 }
 
 impl Drawable for Triangle {
     fn draw(&self, image: &mut impl Displayable) {
-
-        Line::new(&self.p1, &self.p2).draw(image);
-        Line::new(&self.p2, &self.p3).draw(image);
-        Line::new(&self.p3, &self.p1).draw(image);
-    }
-
-    fn color(&self) -> Color {
-        Color::hex("#ffffffff").unwrap()
+        let color = self.color();
+        Line::new(&self.p1, &self.p2).draw_with_color(image, &color);
+        Line::new(&self.p2, &self.p3).draw_with_color(image, &color);
+        Line::new(&self.p3, &self.p1).draw_with_color(image, &color);
     }
 }
 
@@ -150,8 +161,42 @@ impl Drawable for Rectangle {
         Line::new(&self.p2, &p4).draw(image);
         Line::new(&p4, &self.p1).draw(image);
     }
+}
+impl Circle {
+    pub fn new(center: Point, radius: i32) -> Self {
+        Self { center, radius }
+    }
 
-    fn color(&self) -> Color {
-        Color::hex("#ff0000ff").unwrap()
+    pub fn random(width: i32, height: i32) -> Self {
+        let center = Point::random(width, height);
+        let edge = Point::random(width, height);
+        let radius = (
+            ((edge.x - center.x).pow(2) + (edge.y - center.y).pow(2)) as f32
+        ).sqrt() as i32;
+        Self::new(center, radius)
+    }
+}
+
+impl Drawable for Circle {
+    fn draw(&self, image: &mut impl Displayable) {
+        use std::f32::consts::PI;
+
+        let color = self.color();
+        let cx = self.center.x as f32;
+        let cy = self.center.y as f32;
+        let r = self.radius as f32;
+
+        let mut steps = (2.0 * PI * r).round() as i32;
+        if steps <= 0 {
+            steps = 1;
+        }
+
+        for i in 0..=steps {
+            let theta = ((i as f32) * 2.0 * PI) / (steps as f32);
+            let x = cx + r * theta.cos();
+            let y = cy + r * theta.sin();
+
+            image.display(x.round() as i32, y.round() as i32, color.clone());
+        }
     }
 }
