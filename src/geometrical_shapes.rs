@@ -152,11 +152,6 @@ impl Drawable for Rectangle {
     }
 
     fn color(&self) -> Color {
-        let mut rng = rand::rng();
-        Color::rgb(
-            rng.random::<u8>(), 
-            rng.random::<u8>(), 
-            rng.random::<u8>(), 
-        )
+        Color::hex("#ff0000ff").unwrap()
     }
 }
