@@ -1,6 +1,6 @@
+#![allow(dead_code)]
 use rand::Rng;
 use raster::Color;
-
 pub trait Drawable {
     fn draw(&self, img: &mut impl Displayable);
 
@@ -119,7 +119,6 @@ impl Drawable for Line {
         }
     }
 }
-
 impl Triangle {
     pub fn new(p1: &Point, p2: &Point, p3: &Point) -> Self {
         Triangle {
