@@ -25,10 +25,9 @@ pub struct Line {
 }
 
 pub struct Rectangle {
-    top_left: Point,
-    bottom_right: Point,
+    p1: Point,
+    p2: Point,
 }
-
 pub struct Triangle {
     p1: Point,
     p2: Point,
@@ -133,5 +132,26 @@ impl Drawable for Triangle {
 
     fn color(&self) -> Color {
         Color::hex("#ffffffff").unwrap()
+    }
+}
+
+impl Rectangle {
+    pub fn new(p1: &Point, p2: &Point) -> Self {
+        Rectangle { p1: *p1, p2: *p2 }
+    }
+}
+
+impl Drawable for Rectangle {
+    fn draw(&self, image: &mut impl Displayable) {
+        let p3 = Point::new(self.p1.x, self.p2.y);
+        let p4 = Point::new(self.p2.x, self.p1.y);
+        Line::new(&self.p1, &p3).draw(image);
+        Line::new(&p3, &self.p2).draw(image);
+        Line::new(&self.p2, &p4).draw(image);
+        Line::new(&p4, &self.p1).draw(image);
+    }
+
+    fn color(&self) -> Color {
+        Color::hex("#ff0000ff").unwrap()
     }
 }
